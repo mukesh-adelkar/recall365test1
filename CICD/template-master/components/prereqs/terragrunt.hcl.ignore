@@ -1,0 +1,28 @@
+dependencies {
+  paths = ["../vpc"]
+}
+include {
+  path = "${find_in_parent_folders()}"
+}
+terraform {
+  source = "git::ssh://git@gitlab.com/Halliburton-Landmark/dsif/terraform/aws/prereqs.git//?ref=master"
+}
+
+inputs = {
+  deployment_name = "[CLUSTER_NAME]"
+  engineer_name = "Jude Gonsalves"
+  customer_name = "LMK"
+  optional_name_suffix = ""
+
+  business_owner = "David Clark"
+  project = "phoenix"
+  owner = "Wei Chiu"
+  createdby = "Jude Gonsalves"
+
+  region = "us-east-1"
+
+  parameter_map = {
+    "key1" = "val1"
+    "key2" = "val2"
+  }
+}

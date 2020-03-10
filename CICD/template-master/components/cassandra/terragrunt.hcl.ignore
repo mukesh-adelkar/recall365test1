@@ -1,0 +1,41 @@
+dependencies {
+  paths = ["../vpc", "../iam"]
+}
+include {
+  path = "${find_in_parent_folders()}"
+}
+terraform {
+  source = "git::ssh://git@gitlab.com/Halliburton-Landmark/dsif/terraform/aws/cassandra.git//?ref=master"
+}
+
+inputs = {
+  cluster_name = "[CLUSTER_NAME]"
+  agent_count = 4
+  agent_instance_type = "i3.2xlarge" # i3.8xlarge
+  agent_nonroot_block_size = 20
+  agent_root_block_size = 500
+  #ami = "ami-0e0c6055fd7cef5a7"
+  #ami = "ami-07d0cf3af28718ef8" # Canonical, Ubuntu, 18.04 LTS, amd64 bionic image build on 2019-07-22
+  #ami = "ami-05e840d0e9eee905e"
+  bootstrap_ami = "ami-0b4c528a12ded7c04"
+  agent_ami = "ami-0b4c528a12ded7c04"
+  engineer_name = "Jude Gonsalves"
+  owner_name = "Wei Chiu"
+  private_ssh_key_ssm_path = "phoenix-dev-key"
+  region = "us-east-1"
+  requestor_name = "Jude Gonsalves"
+  agents_dir = "/home/ec2-user/agents"
+
+  private_subnets = []
+  vpc_id = ""
+
+  cassandra_iam_instance_profile_name = "null"
+
+  vpc_tfstate_bucket_key = "phoenix/df14-test/.shared3/components/vpc/terraform.tfstate"
+  vpc_tfstate_bucket_name = "halliburton-terraform-state"
+  vpc_tfstate_bucket_region = "us-east-1"
+  do_use_iam_tfstate = "true"
+  iam_tfstate_bucket_key = "phoenix/df14-test/.shared3/components/iam/terraform.tfstate"
+  iam_tfstate_bucket_name = "halliburton-terraform-state"
+  iam_tfstate_bucket_region = "us-east-1"
+}

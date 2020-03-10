@@ -1,0 +1,41 @@
+#!groovy
+
+pipeline {
+    agent {
+        label 'linux'
+    }
+    options {
+        ansiColor('xterm')
+        timeout(time: 60, unit: 'MINUTES')
+    }
+
+    parameters {
+        choice(name: 'TERRAFORM_COMMAND', choices: 'create\ndestroy', description: 'Specify whether Terraform should create or destroy a plan.')
+        string(name: 'CLUSTER_NAME', defaultValue: 'jg', description: 'Choose the name for the cluster deployment.')
+        string(name: 'PHOENIX_BRANCH', defaultValue: 'master', description: '')
+    }
+
+    environment {
+        TERRAFORM_COMMAND            = "${params.TERRAFORM_COMMAND}"
+        CLUSTER_NAME                 = "${params.CLUSTER_NAME}"
+        PHOENIX_BRANCH               = "${params.PHOENIX_BRANCH}"
+        PATH                         = "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+    }
+
+    stages {
+        stage("Cluster creation") {
+            steps {
+                sh '''
+                   ./config.sh ${CLUSTER_NAME} &&
+                   cd components/eks &&
+                   sed -i -e 's/ref=master/ref='"${PHOENIX_BRANCH}"'/g' terragrunt.hcl
+                   if [[ ${TERRAFORM_COMMAND} == "create" ]]; then
+                       terragrunt apply -auto-approve
+                   elif [[ ${TERRAFORM_COMMAND} == "destroy" ]]; then
+                       terragrunt destroy -force
+                   fi 
+                '''
+            }
+        }
+    }
+}
